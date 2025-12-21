@@ -5,3 +5,7 @@
 
 „Das Scenario interactive_vs_cpu demonstriert, dass der Completely Fair Scheduler kurze, interaktive Prozesse 
 bevorzugt behandelt, ohne lang laufende CPU-bound Prozesse zu benachteiligen. Dadurch bleibt das System reaktionsfähig.“
+
+
+„Das Starvation-Scenario zeigt, dass der Completely Fair Scheduler auch bei stark unterschiedlichen Prioritäten 
+allen Prozessen langfristig CPU-Zeit zuteilt. Starvation wird durch die monotone Erhöhung der virtuellen Laufzeit verhindert.“
