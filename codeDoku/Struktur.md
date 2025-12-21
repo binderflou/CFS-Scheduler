@@ -1,84 +1,176 @@
-# core/ → „Was ist der Scheduler?“ (Herzstück)
+# 01_src/core/ – Scheduler-Kern (Clean & Denkbar)
 
-process.py
+---
 
-Prozess-Objekt
+## 🎯 Ziel von `01_src/core/`
 
-Attribute: pid, nice, weight, vruntime, exec_time
+- Enthält **nur** den Scheduler-Kern  
+  - ❌ keine GUI  
+  - ❌ kein Plotting  
+  - ❌ keine Szenarien
+- Jede Datei ist so gestaltet, dass sie im Kopf wie **Kernel-Bausteine** zusammengesetzt werden kann
+- Fokus auf **Lesbarkeit + mentale Simulation**
 
-scheduler.py
+---
 
-CFS-Logik
+## 💡 Aha-Moment (Leitprinzip)
 
-Auswahl: kleinste vruntime gewinnt ← Aha-Moment
+- **CFS = Wähle immer den Prozess mit der kleinsten `vruntime`**
+- Priorität / `nice`:
+  - wirkt **nicht magisch**
+  - beeinflusst nur das **Gewicht**
+- Unterschiedliche Gewichte ⇒
+  - `vruntime` wächst unterschiedlich schnell
+  - Scheduler bleibt simpel und fair
 
-runqueue.py (optional, aber elegant)
+---
 
-Verwaltung aller lauffähigen Prozesse
+## 📦 `core/process.py` – Prozessmodell
 
-Sortierung nach vruntime
+### Zweck
+- Reines Daten- + Minimal-Logik-Objekt
+- Kein Scheduling-Wissen
 
-constants.py
+### Struktur
+- `Process` als Dataclass / Objekt
 
-NICE-to-WEIGHT Tabelle
+### Pflichtfelder
+- `pid`  
+  - eindeutig
+- `nice`  
+  - z. B. `-20 … +19`
+- `weight`  
+  - aus `nice` abgeleitet
+- `vruntime`  
+  - Start meist `0.0`
+- `runtime` / `exec_done`  
+  - tatsächlich erhaltene CPU-Zeit
+- `burst_total` / `work_remaining`  
+  - gesamte vs. verbleibende Arbeit
+- `state`  
+  - `RUNNABLE | RUNNING | FINISHED`
 
-Zeitscheiben-Parameter
+### Methoden (minimal)
+- `is_finished()`
+- optional `run_for(delta_exec)`  
+  - reduziert `work_remaining`
+  - erhöht `runtime`
 
-👉 Merksatz:
-core enthält alles, was man theoretisch auch im Linux-Kernel finden würde – nur vereinfacht.
+---
 
-# metric/ → „Wie fair ist das Ganze?“
+## ⚖️ `core/weights.py` oder `core/constants.py` – Nice → Weight
 
-metrics.py
+### Inhalt
+- Funktion oder Tabelle:
+  - `nice_to_weight(nice)`
+- Konstante:
+  - `NICE_0_WEIGHT`
+- optional:
+  - inverse Gewichte
+  - Helper für `vruntime`-Berechnung
 
-Fairness-Metriken
+### Aha
+- Nice-Logik **sichtbar & explizit**
+- Nicht im Scheduler „versteckt“
 
-Vergleich: reale Laufzeit vs. ideale Laufzeit
+---
 
-vruntime_tracker.py
+## 🧺 `core/runqueue.py` – Runqueue
 
-Verlauf der virtuellen Laufzeiten
+### Zweck
+- Verwaltung aller **RUNNABLE** Prozesse
+- Zentrale Datenstruktur des Schedulers
 
-Wer „benachteiligt“ wird
+### Kernoperationen
+- `add(proc)`
+- `remove(proc)`
+- `pick_next()`  
+  - liefert Prozess mit **kleinster `vruntime`**
+- optional `update(proc)`  
+  - bei geänderter `vruntime`
 
-statistics.py
+### Implementationsvarianten
+- simpel:
+  - `list + min(...)`
+- eleganter:
+  - sortierte Liste (`bisect`)
+  - `heapq`
 
-Durchschnittswerte
+### Aha
+- Runqueue = **„Sortiert nach vruntime“**
+- Kein Hexenwerk
 
-Wartezeiten
+---
 
-Turnaround-Time
+## 🎼 `core/scheduler.py` – CFS-Logik
 
-👉 Aha-Moment:
-CFS misst Fairness nicht in Zeit, sondern in virtueller Zeit.
+### Klasse
+- `CFSScheduler`
 
-# scenarios/ → „Zeig mir, dass es funktioniert“
+### Verantwortlichkeiten
+- Prozesse registrieren:
+  - `add_process(proc)`
+- Zeitschritt simulieren:
+  - `step()`
+- Ablauf pro Step:
+  - nächsten Prozess aus Runqueue wählen
+  - reale Laufzeit bestimmen (`delta_exec`)
+  - `vruntime` aktualisieren (gewichtsbasiert)
+  - Prozess beenden, wenn Arbeit fertig
 
-simple_equal.py
+### Timeslice / Granularity
+- Parameter:
+  - `target_latency`
+  - `min_granularity`
+- Idee:
+  - `slice ≈ target_latency * weight / sum_weights`
+  - aber **nie kleiner als** `min_granularity`
 
-Mehrere Prozesse, gleiche Priorität
+### Exports (für GUI / Szenarien)
+- `snapshot()`:
+  - Liste aller Prozesse
+  - aktuelle Werte
+  - aktuell laufende `pid`
 
-different_nice.py
+---
 
-Unterschiedliche Nice-Werte
+## ⏱️ `core/vruntime.py` (optional, aber sauber)
 
-Sichtbar: vruntime wächst unterschiedlich schnell
+### Zweck
+- Zentrale Formel
+- Keine Magie im Scheduler
 
-interactive_vs_cpu.py
+### Funktion
+- `calc_vruntime_delta(delta_exec, weight, NICE_0_WEIGHT)`
 
-Kurz laufende vs. lange Prozesse
+### Klassische Formel
+- `vruntime += delta_exec * (NICE_0_WEIGHT / weight)`
 
-starvation_test.py
+### Aha
+- großes `weight` ⇒
+  - kleiner `vruntime`-Anstieg
+  - Prozess bleibt länger „vorn“
 
-Nachweis: keine Verhungern
+---
 
-👉 Prüfungs-Gold:
-Hier entstehen die Screenshots / Diagramme / Demo-Runs für Präsentation & Doku.
+## 🧾 `core/types.py` oder `core/enums.py` (optional)
 
-Faustregel
+### Inhalt
+- `ProcessState` Enum:
+  - `RUNNABLE`
+  - `RUNNING`
+  - `FINISHED`
+- optional:
+  - `SchedulerConfig` als Dataclass
 
-core = Logik
+---
 
-metric = Bewertung
+## 🚫 Was **nicht** in `core/` gehört
 
-scenarios = Beweis
+- ❌ GUI → `ui/`
+- ❌ Plots / Metriken → `metric/`
+- ❌ Demo-Workloads → `scenarios/`
+- ❌ Dateizugriff / Exporte  
+  - maximal: minimaler Logger
+
+---
