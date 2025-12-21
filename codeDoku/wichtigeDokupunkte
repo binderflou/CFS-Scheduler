@@ -1,3 +1,7 @@
 „Der Completely Fair Scheduler wählt in jedem Scheduling-Schritt den Prozess mit der kleinsten virtuellen Laufzeit. 
   Durch die Gewichtung der virtuellen Laufzeit anhand des Nice-Wertes erhalten Prozesse mit höherer Priorität 
   langfristig einen größeren Anteil der CPU, ohne andere Prozesse vollständig zu verdrängen.“
+
+
+„Das Scenario interactive_vs_cpu demonstriert, dass der Completely Fair Scheduler kurze, interaktive Prozesse 
+bevorzugt behandelt, ohne lang laufende CPU-bound Prozesse zu benachteiligen. Dadurch bleibt das System reaktionsfähig.“
