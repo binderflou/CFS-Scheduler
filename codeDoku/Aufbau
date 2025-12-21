@@ -1,0 +1,46 @@
+project_root/
+├── 01_src/
+│   ├── core/                 # CFS-Kernlogik (Algorithmus)
+│   │   ├── __init__.py
+│   │   ├── process.py        # Prozessmodell (pid, nice, vruntime, state)
+│   │   ├── scheduler.py      # CFS-Algorithmus (pick next, step)
+│   │   ├── runqueue.py       # Verwaltung lauffähiger Prozesse
+│   │   ├── weights.py        # nice → weight Umrechnung
+│   │   └── types.py          # Enums / Datentypen
+│   │
+│   ├── metric/               # Bewertung & Visualisierung
+│   │   ├── __init__.py
+│   │   ├── metrics.py        # Fairness-, Wartezeit-, CPU-Metriken
+│   │   ├── plotter.py        # matplotlib-Plots (vruntime, CPU-Anteile)
+│   │   └── export.py         # CSV/JSON-Export
+│   │
+│   ├── scenarios/            # Ausführbare Demo-Szenarien (CLI)
+│   │   ├── __init__.py
+│   │   ├── simple_equal.py
+│   │   ├── different_nice.py
+│   │   ├── interactive_vs_cpu.py
+│   │   └── starvation_test.py
+│   │
+│   └── ui/                   # Minimal-GUI (Controller + View)
+│       ├── __init__.py
+│       ├── app.py            # Fenster, Buttons, Event-Loop
+│       ├── render.py         # Tabellen / Timeline anzeigen
+│       └── bindings.py       # GUI ↔ core (start, pause, step)
+│
+├── 02_tests/                 # Unit-Tests für core
+│   ├── test_weights.py
+│   ├── test_runqueue.py
+│   └── test_scheduler_basic.py
+│
+├── 03_docs/                  # Dokumentation
+│   ├── architecture.md
+│   ├── cfs_explained.md
+│   └── eevdf_comparison.md
+│
+├── 04_assets/                # Bilder & Plots für Abgabe
+│   ├── screenshots/
+│   └── plots/
+│
+├── main.py                   # Optionaler Einstiegspunkt
+├── requirements.txt
+└── README.md
