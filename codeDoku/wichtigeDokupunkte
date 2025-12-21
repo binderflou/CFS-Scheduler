@@ -1,0 +1,3 @@
+„Der Completely Fair Scheduler wählt in jedem Scheduling-Schritt den Prozess mit der kleinsten virtuellen Laufzeit. 
+  Durch die Gewichtung der virtuellen Laufzeit anhand des Nice-Wertes erhalten Prozesse mit höherer Priorität 
+  langfristig einen größeren Anteil der CPU, ohne andere Prozesse vollständig zu verdrängen.“
