@@ -9,3 +9,18 @@ bevorzugt behandelt, ohne lang laufende CPU-bound Prozesse zu benachteiligen. Da
 
 „Das Starvation-Scenario zeigt, dass der Completely Fair Scheduler auch bei stark unterschiedlichen Prioritäten 
 allen Prozessen langfristig CPU-Zeit zuteilt. Starvation wird durch die monotone Erhöhung der virtuellen Laufzeit verhindert.“
+
+
+Ausgabe nach Implementierung Metrics:
+
+„Obwohl Prozesse mit niedrigem Nice-Wert häufiger eingeplant werden, erhalten bei identischer Gesamtarbeit alle Prozesse
+am Ende die gleiche CPU-Zeit. Der Completely Fair Scheduler beeinflusst die zeitliche Reihenfolge der Ausführung, 
+nicht jedoch die insgesamt zugeteilte Arbeit. Dies zeigt sich an stark unterschiedlichen virtuellen Laufzeiten bei identischer realer Laufzeit.“
+
+
+
+Die Visualisierung des Scenarios „different_nice“ zeigt den Unterschied zwischen erwarteten CPU-Anteilen gemäß Gewichtung und den 
+tatsächlich erhaltenen CPU-Anteilen. Obwohl Prozesse mit niedrigerem Nice-Wert bevorzugt eingeplant werden, erhalten bei identischer 
+Gesamtarbeit alle Prozesse am Ende die gleiche reale CPU-Zeit. Der Completely Fair Scheduler steuert somit primär die zeitliche 
+Reihenfolge der Ausführung und nicht die insgesamt verrichtete Arbeit. Dies spiegelt sich in stark unterschiedlichen virtuellen 
+Laufzeiten bei gleicher realer Laufzeit wider.
