@@ -1,4 +1,4 @@
-#core/ → „Was ist der Scheduler?“ (Herzstück)
+# core/ → „Was ist der Scheduler?“ (Herzstück)
 
 process.py
 
@@ -27,7 +27,7 @@ Zeitscheiben-Parameter
 👉 Merksatz:
 core enthält alles, was man theoretisch auch im Linux-Kernel finden würde – nur vereinfacht.
 
-#metric/ → „Wie fair ist das Ganze?“
+# metric/ → „Wie fair ist das Ganze?“
 
 metrics.py
 
@@ -52,7 +52,7 @@ Turnaround-Time
 👉 Aha-Moment:
 CFS misst Fairness nicht in Zeit, sondern in virtueller Zeit.
 
-#scenarios/ → „Zeig mir, dass es funktioniert“
+# scenarios/ → „Zeig mir, dass es funktioniert“
 
 simple_equal.py
 
