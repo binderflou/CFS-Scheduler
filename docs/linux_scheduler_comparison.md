@@ -29,7 +29,7 @@ Ist das Quantum einer Aktivität aufgebraucht wird es neu berechnet. Die Berechn
  
 ![Abb. 1: Run Queue des O(1) Scheduler, S. 133 [1]](images/Run_Queue_O(1)_Scheduler.png)
 
-*Abbildung 1: Runqueue des O(1) Schedulers*
+*Abbildung 1: Runqueue des O(1) Schedulers, S. 133 [1]*
 
 Für jede CPU wird eine eigene Runqueue gepflegt. Sie enthält Zeiger auf die eigentlichen Prozesswarteschlangen. Der O(1) Scheduler organisiert die auszuführenden Aufgaben dabei in zwei Warteschlangen, eine „active“-Queue für Prozesse mit verbleibendem Quantum und eine „expired“-Queue für abgelaufene oder unterbrochene Prozesse [5]. Verbraucht ein Vorgang sein Quantum oder wird er unterbrochen, wird er in die expired Queue verschoben. Sobald alle Prozesse in dieser Queue stehen, werden die Quanten neu bestimmt und die Rollen der beiden Queues durch einen einfachen Zeigertausch gewechselt. Die Abarbeitung beginnt anschließend von Neuem.
 
@@ -47,7 +47,7 @@ Wie oben bereits angeschnitten ist auch die Struktur, in der die Vorgänge organ
  
 ![Abb. 2: Red/Black-Tree des CFS, [5]](images/CFS_Red_Black_Tree.png) 
 
-*Abbildung 2: Red/Black-Tree des CFS*
+*Abbildung 2: Red/Black-Tree des CFS, [5]*
 
 Der Rot-Schwarz-Baum ist ein ausgeglichener binärer Suchbaum (AVL-Baum), der eine logarithmische Laufzeit von O(log n) für Operationen wie Suchen, Einfügen und Löschen erlaubt, wobei n die Anzahl der aktuell vorhandenen Prozesse als Knoten darstellt. Vorgänge werden durch sched_entity Objekte repräsentiert. Ähnlich wie bei der Priorität des O(1) Scheduler sind die Prozesse mit der geringsten virtual runtime (vruntime) diejenigen, die den größten Bedarf an Rechenleistung besitzen und umgekehrt. Sie werden im Rot-Schwarz-Baum auf der linken bzw. rechten Seite einsortiert. Der Scheduler wählt als nächsten Prozess denjenigen aus, der ganz links außen steht. Während der Task läuft, wird die verbrauchte CPU-Zeit mit der vruntime addiert. Hat er seine Laufphase beendet, wird er wieder zurück in den Baum eingeordnet, jetzt wird er weiter rechts landen, weil seine vruntime gestiegen ist. Durch dieses Verhalten wandern die Prozesse von rechts nach links und zurück. Dadurch ergibt sich eine faire Aufteilung der Rechenzeit unter den Prozessen (S. 134ff, [1]; [5]).
 
