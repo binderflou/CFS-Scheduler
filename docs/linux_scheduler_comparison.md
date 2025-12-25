@@ -27,7 +27,7 @@ Der O(1) Scheduler unterteilt sich in Hauptscheduler und eine periodisch aufgeru
 
 Ist das Quantum einer Aktivität aufgebraucht wird es neu berechnet. Die Berechnung der Länge des Quantums hängt von der Priorität des Prozesses ab. Je höher die Priorität, desto größer ist das zugewiesene Quantum. Für eine Priorität von 100, was der höchsten Priorität von Timesharing Prozessen entspricht, wird ein Quantum von 800 ms ermittelt. Ein Quantum von 5 ms hingegen entspricht einer Priorität von 139. Neben der Priorität und dem Zeitintervall der gewährten CPU-Zeit - der Zeitscheibe - verwaltet der Scheduler auch für jeden Prozess einen Bonus, der zur Priorität addiert wird. Der Wertebereich dessen liegt zwischen -5 und 5. Prozesse mit hoher Inaktivität, etwa durch häufige Ein- und Ausgabeoperationen, erhalten einen negativen Bonuswert und werden somit belohnt. Je länger ein Prozess „schläft“, desto besser fällt der Bonus für ihn aus (S. 132ff, [1]). 
  
-![Abb. 1: Run Queue des O(1) Scheduler, S. 133 [1]](docs/images/Run_Queue_O(1)_Scheduler.png)
+![Abb. 1: Run Queue des O(1) Scheduler, S. 133 [1]](images/Run_Queue_O(1)_Scheduler.png)
 
 Für jede CPU wird eine eigene Runqueue gepflegt. Sie enthält Zeiger auf die eigentlichen Prozesswarteschlangen. Der O(1) Scheduler organisiert die auszuführenden Aufgaben dabei in zwei Warteschlangen, eine „active“-Queue für Prozesse mit verbleibendem Quantum und eine „expired“-Queue für abgelaufene oder unterbrochene Prozesse [5]. Verbraucht ein Vorgang sein Quantum oder wird er unterbrochen, wird er in die expired Queue verschoben. Sobald alle Prozesse in dieser Queue stehen, werden die Quanten neu bestimmt und die Rollen der beiden Queues durch einen einfachen Zeigertausch gewechselt. Die Abarbeitung beginnt anschließend von Neuem.
 
@@ -43,7 +43,7 @@ Im Unterschied zu seinem Vorgänger - der O(1) Scheduler - verwaltet der CFS kei
 
 Wie oben bereits angeschnitten ist auch die Struktur, in der die Vorgänge organisiert werden, anders als noch beim O(1) Scheduler. Jedem CPU-Kern ist ein eigener Completely Fair Scheduler zugeordnet, der die Prozesse jeweils in einem Rot-Schwarz-Baum (Red/Black-Tree) verwaltet. Die Einordnung in den Baum wird dabei auf Basis des vruntime-Wertes bestimmt (S. 134ff, [1]).
  
-![Abb. 2: Red/Black-Tree des CFS, [5]](docs/images/CFS_Red_Black_Tree.png) 
+![Abb. 2: Red/Black-Tree des CFS, [5]](images/CFS_Red_Black_Tree.png) 
 
 Der Rot-Schwarz-Baum ist ein ausgeglichener binärer Suchbaum (AVL-Baum), der eine logarithmische Laufzeit von O(log n) für Operationen wie Suchen, Einfügen und Löschen erlaubt, wobei n die Anzahl der aktuell vorhandenen Prozesse als Knoten darstellt. Vorgänge werden durch sched_entity Objekte repräsentiert. Ähnlich wie bei der Priorität des O(1) Scheduler sind die Prozesse mit der geringsten virtual runtime (vruntime) diejenigen, die den größten Bedarf an Rechenleistung besitzen und umgekehrt. Sie werden im Rot-Schwarz-Baum auf der linken bzw. rechten Seite einsortiert. Der Scheduler wählt als nächsten Prozess denjenigen aus, der ganz links außen steht. Während der Task läuft, wird die verbrauchte CPU-Zeit mit der vruntime addiert. Hat er seine Laufphase beendet, wird er wieder zurück in den Baum eingeordnet, jetzt wird er weiter rechts landen, weil seine vruntime gestiegen ist. Durch dieses Verhalten wandern die Prozesse von rechts nach links und zurück. Dadurch ergibt sich eine faire Aufteilung der Rechenzeit unter den Prozessen (S. 134ff, [1]; [5]).
 
